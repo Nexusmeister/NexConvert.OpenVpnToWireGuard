@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            binary: ovpn-to-wg-linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+            binary: ovpn-to-wg-osx-arm64
+          - os: windows-latest
+            rid: win-x64
+            binary: ovpn-to-wg-win-x64.exe
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: dotnet publish src/NexConvert.OpenVpnToWireGuard/NexConvert.OpenVpnToWireGuard.csproj -r ${{ matrix.rid }} -c Release -o ./dist
+
+      - name: Rename (Unix)
+        if: runner.os != 'Windows'
+        run: mv ./dist/NexConvert.OpenVpnToWireGuard ./dist/${{ matrix.binary }}
+
+      - name: Rename (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Rename-Item -Path ./dist/NexConvert.OpenVpnToWireGuard.exe -NewName ${{ matrix.binary }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.binary }}
+          path: ./dist/${{ matrix.binary }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifacts/*
+          generate_release_notes: true

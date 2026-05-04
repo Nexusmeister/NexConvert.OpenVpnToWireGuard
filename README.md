@@ -1,6 +1,21 @@
 # OvpnToWireguard
 
+[![CI](https://github.com/Nexusmeister/NexConvert.OpenVpnToWireGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/Nexusmeister/NexConvert.OpenVpnToWireGuard/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A .NET 10 CLI tool that converts an OpenVPN `.ovpn` profile into a WireGuard `.conf` file.
+
+## Download
+
+Pre-built self-contained binaries are on the [Releases page](../../releases/latest) — no .NET SDK required.
+
+| Platform | File |
+|----------|------|
+| Linux x64 | `ovpn-to-wg-linux-x64` |
+| macOS ARM64 | `ovpn-to-wg-osx-arm64` |
+| Windows x64 | `ovpn-to-wg-win-x64.exe` |
+
+---
 
 ## Why?
 
